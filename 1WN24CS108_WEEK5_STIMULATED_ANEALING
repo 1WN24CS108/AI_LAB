@@ -1,68 +1,68 @@
-def implication(a, b):
-    return (not a) or b
+import random
+import math
 
+def create_board():
+    board = [[0 for j in range(4)] for i in range(4)]
 
-def check_kb(model):
-    P = model["P"]
-    Q = model["Q"]
-    R = model["R"]
+    for col in range(4):
+        row = random.randint(0, 3)
+        board[row][col] = 1
 
-    return (
-        (P==Q)
-        and (Q or R)
-        and (implication(not P,R))
-    )
+    return board
 
+def cost(board):
+    conflicts = 0
 
-def check_query(model):
-    return model["R"]
+    for i in range(4):
+        for j in range(4):
+            if board[i][j] == 1:
+                for k in range(j + 1, 4):
+                    for r in range(4):
+                        if board[r][k] == 1:
+                            if abs(i - r) == abs(j - k):
+                                conflicts += 1
 
+    return conflicts
 
-def tt_check_all(symbols, model):
+def simulated_annealing():
+    for restart in range(100):
+        board = create_board()
+        print("Initial board")
+        display(board)
+        temperature = 100.0
 
-    if len(symbols) == 0:
+        while temperature > 0.01:
+            current_cost = cost(board)
 
-        if check_kb(model):
-            return check_query(model)
+            if current_cost == 0:
+                print("Solution found:")
+                display(board)
+                return
 
-        else:
-            return True
+            col = random.randint(0, 3)
+            row = random.randint(0, 3)
 
-    else:
-        P = symbols[0]
+            while board[row][col] == 1:
+                row = random.randint(0, 3)
 
-        rest = symbols[1:]
+            new_board = [r[:] for r in board]
 
-        model_true = model.copy()
-        model_true[P] = True
+            for i in range(4):
+                new_board[i][col] = 0
 
-        model_false = model.copy()
-        model_false[P] = False
+            new_board[row][col] = 1
+            new_cost = cost(new_board)
+            delta = current_cost - new_cost 
 
-        return (
-            tt_check_all(rest, model_true)
-            and
-            tt_check_all(rest, model_false)
-        )
+            if delta < 0 or random.random() < math.exp(-delta / temperature):
+                board = new_board
 
+            temperature *= 0.995
 
-def tt_entails():
+    print("Solution not found. Run again.")
 
-    symbols = ["P", "Q", "R"]
+def display(board):
+    for row in board:
+        print(row)
 
-    model = {}
-
-    return tt_check_all(symbols, model)
-
-
-if tt_entails():
-    print("KB entails Query")
-else:
-    print("KB does not entail Query")
-
-
-
-Output:
-
-
-KB does not entail Query
+simulated_annealing()
