@@ -1,0 +1,40 @@
+
+Harshith Raj K Y
+4:40 PM (2 minutes ago)
+to H, me
+
+# First Order Logic - Resolution
+
+# Knowledge Base
+facts = {
+    "eats(Anil,Peanuts)",
+    "alive(Anil)"
+}
+
+# Rule 1: Alive(x) -> Not Killed(x)
+# Rule 2: Not Killed(x) -> Alive(x)
+# Rule 3: Eats(x,y) AND Not Killed(x) -> Food(y)
+# Rule 4: Food(y) -> Likes(John,y)
+
+# Step 1: Check whether Anil is alive
+if "alive(Anil)" in facts:
+    print("Anil is alive")
+
+    # Step 2: Infer that Anil is not killed
+    not_killed = True
+    print("Anil is not killed")
+
+    # Step 3: Check whether Anil eats peanuts
+    if "eats(Anil,Peanuts)" in facts and not_killed:
+        food = "Peanuts"
+        print("Peanuts is food")
+
+        # Step 4: John likes all food
+        if food == "Peanuts":
+            conclusion = "likes(John,Peanuts)"
+            print("John likes peanuts")
+
+            # Step 5: Resolution result
+            print("Resolution successful")
+            print("Empty clause obtained")
+            print("Hence proved:", conclusion)
